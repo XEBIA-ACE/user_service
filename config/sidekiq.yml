@@ -1,0 +1,11 @@
+:concurrency: <%= ENV.fetch("SIDEKIQ_CONCURRENCY", 5) %>
+:pidfile: tmp/pids/sidekiq.pid
+:logfile: log/sidekiq.log
+:queues:
+  - [critical, 10]
+  - [default, 5]
+  - [low, 1]
+
+:redis:
+  url: <%= ENV.fetch("REDIS_URL", "redis://localhost:6379/0") %>
+  namespace: user_service:sidekiq
