@@ -15,7 +15,6 @@ class CreateUserSessions < ActiveRecord::Migration[7.1]
 
     add_index :user_sessions, :token_jti,     unique: true
     add_index :user_sessions, :refresh_token, unique: true
-    add_index :user_sessions, :user_id
     add_index :user_sessions, :expires_at
   end
 end

@@ -38,12 +38,16 @@ module UserService
     # CORS is configured in initializers/cors.rb
     config.middleware.insert_before 0, Rack::Cors
 
+    # Cookie middleware (not included in API-only apps) for the session cookie
+    config.middleware.use ActionDispatch::Cookies
+
     # Default locale
     config.i18n.default_locale = :en
 
     # Filter sensitive parameters from logs
     config.filter_parameters += %i[
       password password_confirmation token secret key authorization
+      email_address full_name
     ]
   end
 end

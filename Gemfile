@@ -8,6 +8,7 @@ ruby "3.2.2"
 gem "rails", "~> 7.1"
 gem "pg", "~> 1.5"
 gem "puma", "~> 6.4"
+gem "bootsnap", "~> 1.18", require: false
 
 # Redis
 gem "redis", "~> 5.0"

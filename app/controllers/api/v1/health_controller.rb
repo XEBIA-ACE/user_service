@@ -57,7 +57,7 @@ module Api
       end
 
       def check_redis
-        RedisClient.with { |conn| conn.ping }
+        RedisPool.with { |conn| conn.ping }
         { status: "ok" }
       rescue StandardError => e
         { status: "error", message: e.message }
