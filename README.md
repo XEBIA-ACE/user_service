@@ -66,7 +66,7 @@ user_service/
 │           └── refresh_token_service.rb
 ├── config/
 │   ├── initializers/
-│   │   ├── redis.rb                    # ConnectionPool setup, RedisClient module
+│   │   ├── redis.rb                    # ConnectionPool setup, RedisPool module
 │   │   ├── cors.rb                     # Rack::Cors configuration
 │   │   ├── lograge.rb                  # Structured JSON logging
 │   │   └── pagy.rb                     # Pagination defaults

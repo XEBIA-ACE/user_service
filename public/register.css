@@ -1,0 +1,60 @@
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.5;
+  color: #1b1b1b;
+  background: #ffffff;
+}
+main { max-width: 36rem; margin: 0 auto; padding: 2rem 1rem; }
+h1 { font-size: 2rem; margin: 0 0 1rem; }
+.field { margin-bottom: 1.5rem; }
+label { display: block; font-weight: 600; margin-bottom: 0.25rem; }
+.hint { margin: 0 0 0.25rem; color: #4a4a4a; }
+input[type="text"], input[type="email"], input[type="password"] {
+  width: 100%;
+  padding: 0.5rem;
+  font: inherit;
+  border: 2px solid #1b1b1b;
+  border-radius: 0;
+}
+.checkbox-field { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0.5rem; }
+.checkbox-field .field-error { flex-basis: 100%; }
+.checkbox-field input { width: 1.5rem; height: 1.5rem; margin: 0.125rem 0 0; }
+.checkbox-field label { display: inline; font-weight: 400; flex: 1; }
+.password-rules { margin: 0 0 0.5rem; padding-left: 1.25rem; color: #4a4a4a; }
+.password-rules li.met { color: #00703c; }
+.password-rules li.met::after { content: " (met)"; }
+.field-error { margin: 0 0 0.25rem; color: #b10e1e; font-weight: 600; }
+.field.has-error input[type="text"],
+.field.has-error input[type="email"],
+.field.has-error input[type="password"] { border-color: #b10e1e; }
+.error-summary { border: 4px solid #b10e1e; padding: 1rem; margin-bottom: 1.5rem; }
+.error-summary h2 { margin-top: 0; font-size: 1.25rem; }
+.error-summary a { color: #b10e1e; }
+button {
+  font: inherit;
+  font-weight: 600;
+  padding: 0.625rem 1.25rem;
+  color: #ffffff;
+  background: #00703c;
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+button:hover { background: #005a30; }
+button[disabled] { opacity: 0.7; cursor: progress; }
+a:focus, input:focus, button:focus, [tabindex="-1"]:focus {
+  outline: 3px solid #ffbf47;
+  outline-offset: 2px;
+}
+.skip-link { position: absolute; left: -999px; }
+.skip-link:focus { position: static; display: inline-block; padding: 0.5rem; }
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}

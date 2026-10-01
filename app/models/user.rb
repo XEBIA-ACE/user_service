@@ -36,15 +36,17 @@ class User < ApplicationRecord
     length: { minimum: 3, maximum: 50 }
 
   validates :first_name, presence: true, length: { maximum: 100 }
-  validates :last_name,  presence: true, length: { maximum: 100 }
+  validates :last_name,  presence: true, unless: -> { self[:full_name].present? }
+  validates :last_name,  length: { maximum: 100 }
+  validates :full_name,  length: { maximum: 255 }, allow_nil: true
   validates :phone,      format: { with: /\A\+?[0-9\s\-().]{7,20}\z/ }, allow_blank: true
   validates :bio,        length: { maximum: 500 }, allow_blank: true
 
   # Password validation is handled by has_secure_password
   has_secure_password
-  validates :password, length: { minimum: 8, maximum: 128 },
+  validates :password, length: { minimum: PasswordPolicy::MIN_LENGTH, maximum: PasswordPolicy::MAX_LENGTH },
                        format: {
-                         with: /\A(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+\z/,
+                         with: PasswordPolicy::FORMAT,
                          message: "must include uppercase, lowercase, digit and special character"
                        },
                        if: :password_required?
@@ -68,7 +70,7 @@ class User < ApplicationRecord
 
   # Returns full display name.
   def full_name
-    "#{first_name} #{last_name}".strip
+    self[:full_name].presence || "#{first_name} #{last_name}".strip
   end
 
   # Checks whether the account is currently locked due to failed logins.

@@ -13,14 +13,13 @@ REDIS_POOL = ConnectionPool.new(
   Redis.new(
     url: redis_config[:url],
     timeout: redis_config[:timeout] || 1,
-    reconnect_attempts: redis_config[:reconnect_attempts] || 3,
-    logger: Rails.logger
+    reconnect_attempts: redis_config[:reconnect_attempts] || 3
   )
 end
 
 # Convenience wrapper — yields a Redis connection from the pool.
-# Usage: RedisClient.with { |conn| conn.get("key") }
-module RedisClient
+# Usage: RedisPool.with { |conn| conn.get("key") }
+module RedisPool
   def self.with(&block)
     REDIS_POOL.with(&block)
   end

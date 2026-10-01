@@ -33,29 +33,15 @@ module Users
     private
 
     def issue_tokens!(user)
-      access_token, jti = JwtService.encode_access(user)
-      refresh_token = JwtService.encode_refresh(user)
+      tokens = SessionIssuer.new(user, ip_address: @ip_address, user_agent: @user_agent).call
 
-      # Persist session for auditing and refresh-token rotation
-      user.user_sessions.create!(
-        token_jti: jti,
-        refresh_token: SecureRandom.hex(32), # opaque token stored in DB
-        ip_address: @ip_address,
-        user_agent: @user_agent,
-        expires_at: JwtService::ACCESS_TOKEN_TTL.seconds.from_now
-      )
-
-      {
-        access_token: access_token,
-        refresh_token: refresh_token,
-        token_type: "Bearer",
-        expires_in: JwtService::ACCESS_TOKEN_TTL,
+      tokens.merge(
         user: {
           id: user.id,
           email: user.email,
           role: user.role
         }
-      }
+      )
     end
   end
 end

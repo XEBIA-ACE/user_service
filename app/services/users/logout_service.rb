@@ -19,7 +19,7 @@ module Users
 
       # Add JTI to denylist for its remaining lifetime
       if jti.present? && ttl.positive?
-        RedisClient.with { |conn| conn.setex("revoked_token:#{jti}", ttl, "1") }
+        RedisPool.with { |conn| conn.setex("revoked_token:#{jti}", ttl, "1") }
       end
 
       # Revoke the DB session record if present

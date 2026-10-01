@@ -18,6 +18,11 @@ Rails.application.routes.draw do
       post "/auth/refresh", to: "auth#refresh"
       delete "/auth/logout", to: "auth#logout"
 
+      # Self-service registration (declared before the users resource so
+      # "register" is not captured as a user :id)
+      get  "/users/register", to: "registrations#new",    as: :new_registration
+      post "/users/register", to: "registrations#create", as: :registration
+
       # Users resource
       resources :users, only: %i[index show create update destroy] do
         collection do

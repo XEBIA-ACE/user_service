@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
 class ApplicationController < ActionController::API
+  include ActionController::Cookies
   include Pagy::Backend
+
+  SESSION_COOKIE_NAME = "session_token"
 
   # ------------------------------------------------------------------
   # Error handling
@@ -97,11 +100,11 @@ class ApplicationController < ActionController::API
   # ------------------------------------------------------------------
 
   def extract_bearer_token
-    request.headers["Authorization"]&.sub(/\ABearer /, "")
+    request.headers["Authorization"]&.sub(/\ABearer /, "").presence || cookies[SESSION_COOKIE_NAME]
   end
 
   def token_revoked?(jti)
-    RedisClient.with { |conn| conn.get("revoked_token:#{jti}") }.present?
+    RedisPool.with { |conn| conn.get("revoked_token:#{jti}") }.present?
   end
 
   # ------------------------------------------------------------------

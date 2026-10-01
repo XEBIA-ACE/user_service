@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create your account</title>
+  <link rel="stylesheet" href="/register.css">
+  <script src="/register.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to registration form</a>
+  <main id="main">
+    <section id="registration" aria-labelledby="registration-heading">
+      <h1 id="registration-heading">Create your account</h1>
+      <p>All fields are required.</p>
+
+      <div id="error-summary" class="error-summary" role="alert" tabindex="-1" hidden>
+        <h2>There is a problem</h2>
+        <ul id="error-summary-list"></ul>
+      </div>
+
+      <form id="registration-form" action="/api/v1/users/register" method="post" novalidate>
+        <div class="field" id="full_name-field">
+          <label for="full_name">Full name</label>
+          <p class="field-error" id="full_name-error" hidden></p>
+          <input id="full_name" name="full_name" type="text" autocomplete="name"
+                 maxlength="255" required aria-describedby="full_name-error">
+        </div>
+
+        <div class="field" id="email_address-field">
+          <label for="email_address">Email address</label>
+          <p class="hint" id="email_address-hint">For example, name@example.com</p>
+          <p class="field-error" id="email_address-error" hidden></p>
+          <input id="email_address" name="email_address" type="email" autocomplete="email"
+                 maxlength="255" spellcheck="false" required
+                 aria-describedby="email_address-hint email_address-error">
+        </div>
+
+        <div class="field" id="password-field">
+          <label for="password">Password</label>
+          <p class="hint" id="password-hint">Your password must:</p>
+          <ul class="password-rules" id="password-rules" aria-labelledby="password-hint">
+            <li data-rule="length">be 8 to 128 characters long</li>
+            <li data-rule="lowercase">include a lowercase letter</li>
+            <li data-rule="uppercase">include an uppercase letter</li>
+            <li data-rule="digit">include a digit</li>
+            <li data-rule="special">include a special character</li>
+          </ul>
+          <p class="field-error" id="password-error" hidden></p>
+          <input id="password" name="password" type="password" autocomplete="new-password"
+                 maxlength="128" required aria-describedby="password-hint password-rules password-error">
+        </div>
+
+        <div class="field checkbox-field" id="consent_accepted-field">
+          <p class="field-error" id="consent_accepted-error" hidden></p>
+          <input id="consent_accepted" name="consent_accepted" type="checkbox" value="true"
+                 required aria-describedby="consent_accepted-error">
+          <label for="consent_accepted">I agree to the Terms of Service and Privacy Policy</label>
+        </div>
+
+        <button type="submit" id="submit-button">Create account</button>
+      </form>
+    </section>
+
+    <section id="confirmation" aria-labelledby="confirmation-heading" hidden>
+      <h1 id="confirmation-heading" tabindex="-1">Your account has been created</h1>
+      <p id="confirmation-message">You are now signed in.</p>
+      <p id="signed-in-as" hidden></p>
+    </section>
+
+    <p id="status" class="visually-hidden" role="status" aria-live="polite"></p>
+  </main>
+</body>
+</html>
