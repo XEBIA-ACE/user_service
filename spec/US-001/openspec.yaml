@@ -1,0 +1,404 @@
+openspec: '1.0'
+story:
+  id: US-001
+  title: New User Registration Form Submission (Happy Path)
+  description: 'Covers the end-to-end happy-path registration flow: the user fills
+    in the registration form (full name, email, password), accepts ToS/privacy consent,
+    submits the form, and receives confirmation that their account has been created.
+    In scope: form rendering with mandatory fields (full name, email, password — per
+    REC-01 assumption), client-side field-level validation feedback, successful form
+    submission resulting in account creation, and post-registration session behaviour
+    applied per REC-05. Out of scope: server-side validation logic (covered as tasks),
+    password hashing internals, wishlist provisioning trigger, and duplicate/error
+    path handling (covered in US-02 and US-03).'
+  feature:
+    id: F-01
+    title: User Registration & Account Management
+  epic:
+    id: EP-001
+    title: User Registration via Email & Account Provisioning
+  status: draft
+functional_requirement:
+  description: '## SVC-01
+
+
+    # Functional Specification: New User Registration Form Submission (Happy Path)
+
+
+    **Story ID**: US-001
+
+    **Service**: User Service (SVC-01)
+
+    **Feature**: User Registration & Account Management
+
+    **Version**: 1.0
+
+
+    ---
+
+
+    ### Purpose
+
+
+    This specification defines the behaviour of the User Service when a new user completes
+    and submits the account registration form along the happy path. It exists to ensure
+    the service correctly captures user identity data, enforces consent requirements,
+    creates a valid account record, and establishes an authenticated session upon
+    success.
+
+
+    ---
+
+
+    ### Scope
+
+
+    This specification covers registration form rendering, client-side field-level
+    validation, consent capture, account creation on valid submission, and post-registration
+    session establishment within the User Service. It applies exclusively to first-time
+    users with no existing account.
+
+
+    ---
+
+
+    ### Non-Goals
+
+
+    - Server-side input sanitisation and validation logic internals
+
+    - Password hashing and credential storage mechanisms
+
+    - Duplicate email detection and conflict error handling (covered in US-02)
+
+    - Submission failure and server error recovery paths (covered in US-03)
+
+    - Wishlist provisioning triggered at account creation
+
+    - Email verification or post-registration email dispatch
+
+    - Social or third-party authentication flows
+
+    - Account profile editing after registration
+
+
+    ---
+
+
+    ### Key Entities
+
+
+    **User Account**
+
+    - full_name: text
+
+    - email_address: text
+
+    - password_credential: opaque credential value
+
+    - consent_accepted: boolean
+
+    - consent_timestamp: datetime
+
+    - account_status: enumerated state (active, pending, suspended)
+
+    - created_at: datetime
+
+    - session_token: opaque token value
+
+
+    Relationships:
+
+    - User Account is associated with exactly one Session at the point of successful
+    registration (cardinality: 1-to-1 at creation)
+
+    - User Account MAY be associated with a Wishlist record provisioned by a downstream
+    service (cardinality: 1-to-0..1; out of scope for this story)
+
+
+    ---
+
+
+    ### Assumptions
+
+
+    **A-001**: The registration form requires exactly three data-entry fields — full
+    name, email address, and password — plus one ToS/privacy consent checkbox, as
+    stated in REC-01. Affects: FR-001, FR-002, FR-003.
+
+    *(Referenced from user story assumption REC-01)*
+
+
+    **A-002**: Post-registration session behaviour is defined by REC-05 and results
+    in the user being placed into an authenticated session immediately upon successful
+    account creation, without a separate login step. Affects: FR-010, FR-011.
+
+    *(Referenced from user story assumption REC-05)*
+
+
+    **A-003**: Password complexity rules are pre-defined system policy and are available
+    to the client-side validation layer at the time of form rendering. Affects: FR-006.
+
+
+    **A-004**: WCAG 2.1 AA compliance is enforced at the presentation layer; the User
+    Service is responsible for supplying correctly labelled field metadata and logical
+    field ordering to the rendering layer. Affects: FR-004, FR-005.
+
+
+    [NEEDS CLARIFICATION: Does REC-05 specify a session duration or token type that
+    must be reflected in the functional behaviour (e.g. persistent vs. ephemeral session)?]
+    (Assumed: session is ephemeral and scoped to the browser/app session until explicit
+    logout or expiry.)
+
+
+    ---
+
+
+    ### Functional Requirements
+
+
+    **Form Rendering**
+
+
+    FR-001 [P1]: The User Service SHALL present a registration form containing input
+    fields for full name, email address, and password, and a ToS/privacy consent checkbox
+    when a new user navigates to the registration page. *(Ref: A-001)*
+
+
+    FR-002 [P1]: The User Service SHALL designate all four form inputs — full name,
+    email address, password, and consent checkbox — as mandatory before submission
+    is permitted.
+
+
+    FR-003 [P3]: The User Service SHALL render each form field with a descriptive,
+    programmatically associated label so that the field''s purpose is unambiguous
+    to both sighted and assistive-technology users. *(Ref: A-001, A-004)*
+
+
+    FR-004 [P3]: The User Service SHALL present form fields in a logical focus order
+    that follows the visual reading sequence of the form. *(Ref: A-004)*
+
+
+    FR-005 [P3]: The User Service SHALL ensure the registration form meets WCAG 2.1
+    AA accessibility requirements with zero critical violations at the point of rendering.
+    *(Ref: A-004)*
+
+
+    ---
+
+
+    **Client-Side Validation**
+
+
+    FR-006 [P2]: The User Service SHALL validate the password field against the defined
+    complexity rules on the client side and SHALL display field-level feedback indicating
+    which rule is unmet before the user attempts submission. *(Ref: A-003)*
+
+
+    FR-007 [P2]: The User Service SHALL validate that the email address field contains
+    a correctly formatted email address on the client side and SHALL surface a field-level
+    error message when the format is invalid.
+
+
+    FR-008 [P2]: The User Service SHALL validate that the full name field is non-empty
+    and SHALL surface a field-level error message adjacent to the field when the value
+    is absent or consists solely of whitespace.
+
+
+    FR-009 [P2]: The User Service SHALL prevent form submission and SHALL indicate
+    to the user that the ToS/privacy consent checkbox must be checked when the checkbox
+    remains unchecked at submission time.
+
+
+    ---
+
+
+    **'
+  acceptance_criteria:
+  - given_when_then: Given a new user lands on the registration page, When the page
+      loads, Then a form is displayed containing fields for full name, email address,
+      and password, plus a ToS/privacy consent checkbox.
+  - given_when_then: Given a user has entered a valid full name, a correctly formatted
+      unique email, a password meeting complexity rules, and has checked the ToS consent
+      checkbox, When the user submits the form, Then the system creates the user account,
+      applies post-registration session behaviour per REC-05, and displays a success
+      confirmation to the user.
+  - given_when_then: Given a user has successfully registered, When account creation
+      completes, Then the user account record exists in the system and the user can
+      access authenticated features.
+  - given_when_then: Given the registration form is rendered, When inspected for accessibility,
+      Then all form fields have associated labels, focus order is logical, and the
+      form meets WCAG 2.1 AA requirements with zero critical violations.
+  epic_acceptance_criteria:
+  - given_when_then: "Scenario: Successful registration with valid inputs\n  Given\
+      \ a new user completes the registration form with a valid full name, a correctly\
+      \ formatted and unique email address, and a password meeting complexity rules\n\
+      \  And the user has accepted the ToS and privacy policy\n  When the user submits\
+      \ the form\n  Then an account is created\n  And a wishlist is provisioned for\
+      \ the new account\n  And the post-registration session behaviour (auto-authenticate\
+      \ or redirect to login) is applied consistently per REC-05"
+  - given_when_then: "Scenario: Invalid email format rejected\n  Given a user enters\
+      \ an email address that does not conform to valid email format\n  When the user\
+      \ submits the registration form\n  Then the submission is rejected\n  And a\
+      \ descriptive field-level error message is displayed for the email field\n \
+      \ And no account record is created"
+  - given_when_then: "Scenario: Duplicate email rejected\n  Given a user attempts\
+      \ to register with an email address already associated with an existing account\n\
+      \  When the user submits the registration form\n  Then the submission is rejected\n\
+      \  And a clear error is surfaced indicating the email is already in use\n  And\
+      \ no second account record is created"
+  - given_when_then: "Scenario: Missing required fields surface field-level errors\n\
+      \  Given a user submits the registration form with one or more required fields\
+      \ left empty\n  When the form is submitted\n  Then field-level validation errors\
+      \ are displayed for each incomplete required field\n  And no account record\
+      \ is created"
+  - given_when_then: "Scenario: Weak password rejected with criteria-specific message\n\
+      \  Given a user enters a password that does not meet the defined complexity\
+      \ rules (rules TBC per REC-02)\n  When the user submits the registration form\n\
+      \  Then the submission is rejected\n  And an error message specifying which\
+      \ complexity criteria were not met is displayed\n  And no account record is\
+      \ created"
+  - given_when_then: "Scenario: Server-side validation failure overrides client-side\
+      \ pass\n  Given client-side validation has passed for a submitted registration\
+      \ form\n  But server-side validation identifies an invalid or non-compliant\
+      \ input\n  When the server processes the request\n  Then the server-side error\
+      \ is surfaced to the user\n  And no account record is created"
+  - given_when_then: "Scenario: Service unavailability returns error with no partial\
+      \ record\n  Given a system or downstream service failure occurs during the registration\
+      \ process\n  When the user submits the registration form\n  Then an appropriate\
+      \ error message is returned to the user\n  And no partial account record is\
+      \ persisted (atomic operation enforced)\n  And no wishlist provisioning is triggered"
+technical_design:
+  description: '## SVC-01
+
+
+    # Technical Design Specification
+
+
+    **Story ID**: US-001
+
+    **Service**: User Service (SVC-01)
+
+    **Spec Version**: 1.0
+
+
+    ---
+
+
+    ## Section 1: Contracts & Interfaces
+
+
+    ### 1.1 API Contract — POST /api/v1/users/register
+
+
+    This endpoint is an existing route that SHALL be fully implemented per this story.
+    The request body SHALL carry four fields: `full_name` (string, required), `email_address`
+    (string, required, RFC 5322 format), `password` (string, required, opaque), and
+    `consent_accepted` (boolean, required, MUST be `true`). The endpoint SHALL return
+    HTTP 201 on success. The response body SHALL include `user_id` (UUID), `account_status`
+    (string enum: `active`), `created_at` (ISO-8601 datetime), and `session_token`
+    (opaque string). The `session_token` SHALL be set as an `HttpOnly`, `Secure`,
+    `SameSite=Strict` cookie in addition to appearing in the response body to support
+    both browser and mobile API clients.
+
+
+    [NEEDS CLARIFICATION: Should session_token in the response body be omitted for
+    browser clients to enforce cookie-only delivery?] (Assumed: token is returned
+    in both cookie and body to satisfy mobile API clients per service context.)
+
+
+    ### 1.2 Data Model
+
+
+    **Table: `user_accounts`**
+
+
+    The table SHALL contain the following columns: `user_id` UUID PRIMARY KEY DEFAULT
+    gen_random_uuid(), `full_name` VARCHAR(255) NOT NULL, `email_address` VARCHAR(320)
+    NOT NULL, `password_hash` TEXT NOT NULL, `consent_accepted` BOOLEAN NOT NULL DEFAULT
+    FALSE, `consent_timestamp` TIMESTAMPTZ, `account_status` VARCHAR(20) NOT NULL
+    DEFAULT ''active'', `created_at` TIMESTAMPTZ NOT NULL DEFAULT NOW(), `updated_at`
+    TIMESTAMPTZ NOT NULL DEFAULT NOW(). A UNIQUE index SHALL be created on `email_address`.
+    A non-unique index SHOULD be created on `created_at` to support audit queries.
+
+
+    **Table: `user_sessions`**
+
+
+    Columns: `session_id` UUID PRIMARY KEY DEFAULT gen_random_uuid(), `user_id` UUID
+    NOT NULL REFERENCES user_accounts(user_id) ON DELETE CASCADE, `session_token_hash`
+    TEXT NOT NULL, `created_at` TIMESTAMPTZ NOT NULL DEFAULT NOW(), `expires_at` TIMESTAMPTZ
+    NOT NULL. A UNIQUE index SHALL be created on `session_token_hash`. An index SHALL
+    be created on `user_id`.
+
+
+    [NEEDS CLARIFICATION: What is the required session TTL?] (Assumed: 24-hour ephemeral
+    session aligned with A-002.)
+
+
+    ### 1.3 Password Policy Schema
+
+
+    The `GET /api/v1/users/register` form-render endpoint SHALL return a `password_policy`
+    object in its response describing minimum length, required character classes,
+    and maximum length so the client-side validation layer (FR-006, A-003) can enforce
+    rules without hardcoding them.
+
+
+    ---
+
+
+    ## Section 2: Test Strategy
+
+
+    Tests SHALL be written before implementation is merged. Each test case references
+    the contract property it validates.
+
+
+    **Unit Tests — `RegistrationService`**
+
+
+    - `test_create_account_persists_user_record`: Validates `user_accounts` insert,
+    `account_status = active`, `consent_timestamp` populated. Covers FR-002, FR-009.
+
+    - `test_consent_false_raises_validation_error`: Passes `consent_accepted = false`;
+    asserts `ConsentNotAcceptedException` is raised before DB write. Covers FR-009.
+
+    - `test_session_token_generated_and_stored`: Asserts `user_sessions` row created
+    with correct `user_id` and non-null `expires_at`. Covers FR-010, FR-011 (A-002).
+
+    - `test_password_policy_payload_shape`: Asserts policy endpoint response contains
+    `min_length`, `max_length`, `required_classes`. Covers FR-006, A-003.
+
+
+    **Integration Tests — `POST /api/v1/users/register`**
+
+
+    - `test_register_happy_path_returns_201`: Full valid payload; asserts HTTP 201,
+    `session_token` in body, `Set-Cookie` header present with `HttpOnly` and `Secure`
+    flags. Covers API contract §1.1.
+
+    - `test_register_missing_full_name_returns_422`: Omits `full_name`; asserts HTTP
+    422 with field-level error referencing `full_name`. Covers FR-008.
+
+    - `test_register_invalid_email_format_returns_422`: Malformed email; asserts HTTP
+    422. Covers FR-007.
+
+    - `test_register_consent_false_returns_422`: `consent_accepted = false`; asserts
+    HTTP 422. Covers FR-009.
+
+    - `test_register_response_body_schema`: Asserts presence and types of `user_id`,
+    `account_status`, `created_at`, `session_token`. Covers §1.1 response contract.
+
+
+    **Client-Side'
+  affected_services:
+  - id: SVC-01
+  api_changes:
+  - service: SVC-01
+    endpoint: /api/v1/users/register
+    method: POST
+    change_type: VERIFY / POTENTIALLY_MODIFY — confirm request schema includes full_name,
+      email, password, tos_accepted; confirm response shape supports REC-05 session
+      behaviour (JWT or redirect indicator)
+gaps: []
